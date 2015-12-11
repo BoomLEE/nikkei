@@ -8,7 +8,7 @@ foreach ($nikkei_page_list as $category => $page_url) {
     $count = 0;
     foreach($html->find('.cmn-article_title') as $element){
         foreach ($element->find('a') as $url){
-            $result[$category][$count]['url'] = "http://www.nikkei.com/article".$url->href;
+            $result[$category][$count]['url'] = "http://www.nikkei.com".$url->href;
             $result[$category][$count]['title'] = $url->plaintext;
             $count++;
         }
@@ -18,11 +18,13 @@ foreach ($nikkei_page_list as $category => $page_url) {
 $category_name = getCategoryName();
 $contents = "本日の重要記事一覧 (".date("Y年m月d日 H:i:s").") \r\n";
 foreach ($result as $category => $news_list) {
-    $contents.=" [".$category_name[$category]."] ( ".$nikkei_page_list[$category]." )\r\n";
+    $contents.="\r\n [".$category_name[$category]."] ( ".$nikkei_page_list[$category]." )\r\n";
     foreach ($news_list as $no => $news) {
-        $contents.=" TITLE : ".$news['title']."(".$news['url'].") \r\n";
+        $contents.= $no." : ".$news['title']."(".$news['url'].") \r\n";
     }
 }
+
+sendMail($contents);
 
 exit;
 
@@ -42,4 +44,24 @@ function getCategoryName(){
     $list['company'] = "企業";
     $list['social'] = "社会";
     return $list;
+}
+
+function sendMail($contents){
+    
+    $mail_list = array("deabum1@gmail.com");
+    $to = "";
+    foreach ($mail_list as $no => $mail) {
+        $to.= $mail." , ";
+    }
+    $subject = '## 日経新聞くらいは、毎朝、読まないと !!! ###';
+    $message = $contents;
+    $headers = 'From: db@purppo.com' . "\r\n";
+    //$headers .= 'Cc: test@purppo.com' . "\r\n";
+    //$headers .= 'Cc: test2@purppo.co,' . "\r\n";
+    
+    if(mail($to, $subject, $message, $headers) == false){
+        echo "失敗しました。";
+        //TODO
+        exit;
+    }
 }
