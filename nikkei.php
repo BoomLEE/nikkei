@@ -1,5 +1,9 @@
 <?php
 include_once 'simple_html_dom.php';
+/**
+* 日経経済新聞から必要な記事をタイトルとサマリを取得して転送する
+* php nikkei.phpで動くはず
+**/
 
 $nikkei_page_list = getNiikeiUrlList();
 $result = array();
